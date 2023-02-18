@@ -37,7 +37,7 @@ Ready to get started? Here's what you need to do:
 Clone my repo with this command:
 
 ```bash
-git clone https://gitlab.com/behnambm/traefik.git
+git clone https://github.com/behnambm/traefik.git
 ```
 
 ## Env File
