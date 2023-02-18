@@ -1,64 +1,75 @@
-# Traefik configuration
+# Traefik Configuration
 
-This is my very first configuration of Traefik.
-### Routers
+Welcome to my very first Traefik configuration! I've got some things that you need to manage your web traffic, including routers, middlewares, and TLS.
 
-- Dashboard
-- Cat app
-- Whoami
-- Prometheus
-- Grafana
-- Custom error page
+### Routers: Keep Your Traffic Flowing
 
+To ensure a seamless user experience, I've set up the following routers:
 
-### Middlewares
+- Dashboard: Manage your traffic like a pro with Traefik's user-friendly dashboard.
+- Cat app: Let users access your cat app.
+- Whoami: Check that your configurations are working smoothly with this useful tool.
+- Prometheus: Monitor your traffic and gather key insights with this powerful tool.
+- Grafana: Get a comprehensive overview of your web traffic metrics and stay ahead of the game.
+- Custom error page: Keep your users engaged even when things go wrong with a custom error page.
 
-- Basic Auth (admin:admin)
-- Rate limit
-- Custom error page
-- Compress
+### Middlewares: Take Your Traffic Management to the Next Level
 
-### TLS
-Using Let's Encrypt with DNS challenge and Cloudflare API
+My middlewares provide the following features to take your traffic management to the next level:
 
+- Basic Auth (admin:admin): Keep your content secure with basic authentication.
+- Rate limit: Prevent server overload by setting limits on the number of requests.
+- Custom error page: Engage your users even when something goes wrong with a custom error page.
+- Compress: Make your website load faster and reduce bandwidth usage.
+
+### TLS: Secure Your Traffic
+
+I'm using Let's Encrypt with DNS challenge and Cloudflare API to ensure your traffic is always secure.
 
 ---
+
 # Configuration
 
-## Clone the repo
-```
+Ready to get started? Here's what you need to do:
+
+## Clone the Repo
+
+Clone my repo with this command:
+
+```bash
 git clone https://gitlab.com/behnambm/traefik.git
 ```
 
-## Env file
-Create a file named `.compose.env` in order to store Cloudflare API key(Global API Key)
-```
+## Env File
+
+Create a file named `.compose.env` and store your Cloudflare API key (Global API Key) with the following format:
+
+```env
 CF_API_KEY=YOUR_KEY
 CF_API_EMAIL=YOUR_EMAIL@MAIL.COM
 ```
 
-**You also need to set `A` record pointing to your domain in Cloudflare. It should be a wildcard record e.g. `*.example.com`**
+**Don't forget to set an `A` record pointing to your domain in Cloudflare. Make sure it's a wildcard record, e.g., `*.example.com`.**
 
+## Host Name
 
-## Host name
+Some files, like `docker-compose.yml` and `dynamic.yml`, require you to change the host name to your own.
 
-In some files e.g. `docker-compose.yml`, `dynamic.yml` there might be some fields that needs to change to you'r own host name.
+## Run
 
+Start Traefik with the following command:
 
-## Run 
-```
+```bash
 docker compose up -d
 ```
 
-**Get docker logs to check if any errors happend**
+**To check for any errors, run the following command:**
 
-```
+```bash
 docker compose logs traefik
 ```
 
-
 ---
-
 
 # Screenshots
 
@@ -71,4 +82,7 @@ docker compose logs traefik
 
 ### Grafana
 ![Screenshot from 2023-02-18 00-10-15](https://user-images.githubusercontent.com/26994700/219871704-14a847be-da19-4b1e-9f6f-0df83011a1ae.png)
+
+
+And that's it! Your web traffic is now under your control with Traefik. Thanks for checking out my configuration!
 
