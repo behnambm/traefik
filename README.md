@@ -55,6 +55,14 @@ CF_API_EMAIL=YOUR_EMAIL@MAIL.COM
 
 Some files, like `docker-compose.yml` and `dynamic.yml`, require you to change the host name to your own.
 
+## Create acme file
+
+```bash
+touch configs/letsencrypt/acme.json
+
+chmod 600 configs/letsencrypt/acme.json
+```
+
 ## Run
 
 Start Traefik with the following command:
