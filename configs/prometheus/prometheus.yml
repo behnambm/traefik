@@ -1,0 +1,23 @@
+global:
+  scrape_interval: 30s
+  scrape_timeout: 10s
+  external_labels:
+      monitor: 'traefik-prom'
+
+# rule_files:
+#   - 'alert.yml'
+
+scrape_configs:
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - 'prometheus:9090'
+
+  - job_name: 'traefik'
+    scrape_interval: 5s
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - 'traefik:8080'

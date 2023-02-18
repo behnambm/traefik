@@ -1,0 +1,45 @@
+
+http:
+  middlewares:
+    userBasicAuthMid:
+      basicAuth:
+        users:
+          - "admin:$apr1$0Ypc4n6L$gzsN3En3Mb/FuNvbOodoB0"
+
+    compressMid:
+      compress: {}
+
+    errorPageMid:
+      errors:
+        status:
+          - "400-599"
+        service: error-srv@docker  # name of the service that is serving error pages
+        query: "/{status}.html"
+
+
+    oneSecond5ratelimitMid:
+      rateLimit:
+        average: 5
+        burst: 5
+        period: 1s
+
+    oneSecond20ratelimitMid:
+      rateLimit:
+        average: 20
+        burst: 5
+        period: 1s
+
+
+  routers:
+    dashboard:
+      rule: "Host(`dash.example.com`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"  # change me
+      service: api@internal
+      entryPoints:
+        - websecure
+      middlewares:
+        - userBasicAuthMid
+  services:
+    dashboard:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:8080"

@@ -1,0 +1,92 @@
+version: "3.8"
+
+services:
+  traefik:
+    image: traefik:v2.9
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./configs/traefik/traefik.yml:/etc/traefik/traefik.yml
+      - ./configs/traefik/dynamic.yml:/etc/traefik/dynamic.yml
+      - ./configs/letsencrypt/data:/letsencrypt
+      - ./configs/letsencrypt/acme.json:/acme.json  # file on host must have 600 perm
+      - ./logs/access.log:/traefik-logs/access.log
+    env_file:
+      - .compose.env
+
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck"]
+      interval: 10s
+      start_period: 5s
+      retries: 3
+      timeout: 10s
+
+  who:
+    image: traefik/whoami
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`who.example.com`)"  # change me
+      - "traefik.http.routers.whoami.entrypoints=websecure"
+      - "traefik.http.routers.whoami.middlewares=compressMid@file"
+
+
+  catapp:
+    image: mikesir87/cats:1.0
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.catapp.rule=Host(`example.com`)"  # change me
+      - "traefik.http.routers.catapp.service=catapp"
+      - "traefik.http.routers.catapp.entrypoints=websecure"
+      - "traefik.http.routers.catapp.middlewares=compressMid@file,errorPageMid@file"
+      - "traefik.http.services.catapp.loadbalancer.server.port=5000"
+
+
+  error:
+    image: guillaumebriday/traefik-custom-error-pages
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.error-rtr.rule=Host(`error.localhost`)"  
+      - "traefik.http.routers.error-rtr.entrypoints=web"
+      - "traefik.http.routers.error-rtr.service=error-srv"
+      - "traefik.http.services.error-srv.loadbalancer.server.port=80"
+
+
+  prometheus:
+    image: prom/prometheus:v2.42.0
+    volumes:
+      - ./configs/prometheus:/etc/prometheus
+      - prometheus-data:/prometheus
+    command: 
+      - "--web.enable-lifecycle"  # to be able to reload configs without restart
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prometheus.rule=Host(`prometheus.example.com`)"  # change me
+      - "traefik.http.routers.prometheus.service=prometheus"
+      - "traefik.http.routers.prometheus.entrypoints=websecure"
+      - "traefik.http.routers.prometheus.middlewares=oneSecond20ratelimitMid@file,userBasicAuthMid@file"
+      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+
+
+  grafana:
+    image: grafana/grafana:7.3.1
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.example.com`)"  # change me
+      - "traefik.http.routers.grafana.service=grafana"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.middlewares=oneSecond20ratelimitMid@file,userBasicAuthMid@file"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+    depends_on:
+      - prometheus
+    volumes:
+      - grafana-data:/var/lib/grafana
+    env_file:
+      - ./configs/grafana/config.monitoring
+
+volumes:
+  prometheus-data:
+  grafana-data:
+
